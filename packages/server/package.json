@@ -1,0 +1,33 @@
+{
+  "name": "xpost-server",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun ./src/index.ts",
+    "start": "bun ./src/index.ts"
+  },
+  "dependencies": {
+    "@atproto/api": "^0.13.14",
+    "@atproto/oauth-client-node": "^0.2.0",
+    "@clerk/backend": "^1.15.6",
+    "@hono/clerk-auth": "^2.0.0",
+    "@hono/node-server": "^1.13.4",
+    "@prisma/client": "^5.21.1",
+    "@skyware/jetstream": "^0.2.0",
+    "@types/bcryptjs": "^2.4.6",
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
+    "bullmq": "^5.22.0",
+    "hono": "^4.6.8",
+    "redis": "^4.7.0",
+    "twitter-api-v2": "^1.18.1"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/bun": "latest",
+    "prisma": "^5.21.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
