@@ -48,7 +48,7 @@ auth.post('/logout', async (c) => {
 
 // Add a route to check authentication status
 auth.get('/me', async (c) => {
-  const token = getCookie(c, 'token')
+  const token = getCookie(c, 'next-auth.csrf-token')
   if (!token) {
     return c.json({ authenticated: false })
   }

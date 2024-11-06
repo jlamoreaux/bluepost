@@ -22,7 +22,7 @@ export interface CrosspostJob {
 
 export const startWorkers = () => {
   const crosspostWorker = new Worker(CROSSPOST_QUEUE, async (job) => {
-    console.log(`Processing job ${job.id}`);
+    logger.info('Processing job', {jobId: job.id});
     const { userId, content, source, postId } = job.data as CrosspostJob;
 
     const userResult = await userService.getUserById(userId, {includeAccounts: true});
@@ -45,7 +45,8 @@ export const startWorkers = () => {
         const result = await userClient.v2.tweet(content);
         logger.info("Attempted to post to X", result);
         await postService.updatePost(postId, { xPostId: result.data.id, crossPostedTo: 'twitter' });
-        return console.log(`Successfully cross-posted from ${source} for user ${userId}`);
+        logger.info("Successfully cross-posted to X", {postId, xPostId: result.data.id, userId: user.id});
+        return;
       }
       logger.info('User has no twitter account');
     }

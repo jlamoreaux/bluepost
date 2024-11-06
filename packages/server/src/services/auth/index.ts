@@ -25,7 +25,6 @@ export const authService = {
       const userResult = await userService.createUser({ firstName, lastName, email, password: hashedPassword, provider: 'email', providerAccountId: email });
       return userResult;
     } catch (error) {
-      logger.error('Error signing up', { error: error as Error });
       return Result.err(error as Error);
     }
   },

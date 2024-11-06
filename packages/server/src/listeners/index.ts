@@ -16,7 +16,7 @@ export async function startListeners() {
   try {
     logger.info("Starting listeners");
     jetstream.onCreate("app.bsky.feed.post", async (event) => {
-      console.log(`New post: ${JSON.stringify(event.commit.record, null, 2)}`)
+      logger.info("Post received", { id: event.commit.cid });
       if (event.commit.record.reply?.root) {
         return logger.info("Reply post, dropping event", { root: event.commit.record.reply.root });
       }

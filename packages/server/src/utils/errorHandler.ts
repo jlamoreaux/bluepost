@@ -2,7 +2,6 @@ import { type Context, type Next } from 'hono'
 
 export const errorHandler = async (c: Context, next: Next) => {
   try {
-    console.log("oops");
     await next()
   } catch (err) {
     console.error('Error:', err)

@@ -1,12 +1,12 @@
 import { Hono } from 'hono'
 import { serve } from '@hono/node-server'
 import { authRoutes } from './routes/auth/index.ts'
-// import { postRoutes } from './routes/posts'
+import { postRoutes } from './routes/posts/index.ts'
 // import { userRoutes } from './routes/users'
 import { errorHandler } from './utils/errorHandler.ts'
 import { startListeners } from './listeners/index.ts'
 import { env } from 'process';
-import { decode, jwt, type JwtVariables } from 'hono/jwt';
+import { decode } from 'hono/jwt';
 import { getCookie } from 'hono/cookie';
 import { contextStorage } from 'hono/context-storage';
 import logger from './utils/logger.ts';
@@ -14,7 +14,7 @@ import type { User } from '@prisma/client';
 import { startWorkers } from './queue/workers.ts';
 
 
-type Variables = {
+export type Variables = {
   user?: {
     id: string;
     firstName: string;
@@ -33,8 +33,9 @@ app.use('*', errorHandler);
 
 
 app.use('/api/*', async (c, next) => {
-  const token = getCookie(c, 'token');
+  const token = getCookie(c, 'token')
   if (!token) {
+    logger.info('No token found in cookie');
     return c.json({ error: 'Unauthorized' }, 401);
   }
 
@@ -42,6 +43,7 @@ app.use('/api/*', async (c, next) => {
     const payload = await decode(token).payload as {user? : User};
     logger.info('Payload', { payload });
     if (!payload.user) {
+      logger.info('No user found in payload');
       return c.json({ error: 'Unauthorized' }, 401);
     }
     c.set('user', payload.user);
@@ -57,7 +59,7 @@ app.get('/api/protected', async (c) => {
 })
 
 app.route('/auth', authRoutes);
-// app.route('/posts', postRoutes)
+app.route('/api/posts', postRoutes)
 // app.route('/users', userRoutes)
 
 const port = env.PORT || 8080
