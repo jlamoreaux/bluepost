@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -8,9 +8,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 export default function Dashboard() {
   const [twitterConnected, setTwitterConnected] = useState(false)
   const [blueskyConnected, setBlueskyConnected] = useState(false)
-  const [posts, setPosts] = useState([
-    { id: 1, content: 'Hello, world!', source: 'Twitter', destination: 'Bluesky', timestamp: new Date().toISOString() },
-    { id: 2, content: 'Cross-posting is awesome!', source: 'Bluesky', destination: 'Twitter', timestamp: new Date().toISOString() },
+  const [posts, setPosts] = useState<{ id: string | number; content: string; source: 'twitter' | 'bluesky'; crossPostedTo: 'twitter' | 'bluesky'; timestamp: string  }[]>([
+    // { id: 1, content: 'Hello, world!', source: 'Twitter', destination: 'Bluesky', timestamp: new Date().toISOString() },
+    // { id: 2, content: 'Cross-posting is awesome!', source: 'Bluesky', destination: 'Twitter', timestamp: new Date().toISOString() },
   ])
 
   const connectTwitter = () => {
@@ -22,6 +22,21 @@ export default function Dashboard() {
     console.log('Connecting Bluesky...')
     setBlueskyConnected(true)
   }
+
+  useEffect(() => {
+    fetch('/api/posts', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        // accept cors
+        'Access-Control-Allow-Origin': '*',
+      },
+      credentials: 'include',
+    }).then((res) => res.json()).then((data) => {
+      setPosts(data.posts);
+    });
+  }, []);
 
   return (
     <div className="container mx-auto p-4 space-y-8 bg-[#F3F4F6] min-h-screen">
@@ -71,11 +86,11 @@ export default function Dashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {posts.map((post) => (
+              {posts?.length > 0 && posts.map((post) => (
                 <TableRow key={post.id}>
                   <TableCell className="font-roboto">{post.content}</TableCell>
                   <TableCell className="font-roboto">{post.source}</TableCell>
-                  <TableCell className="font-roboto">{post.destination}</TableCell>
+                  <TableCell className="font-roboto">{post.crossPostedTo}</TableCell>
                   <TableCell className="font-roboto">{new Date(post.timestamp).toLocaleString()}</TableCell>
                 </TableRow>
               ))}

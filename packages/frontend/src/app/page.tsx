@@ -1,7 +1,18 @@
-import Link from 'next/link'
+'use client';
+import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 
 export default function Home() {
+  const session = useSession();
+  const router = useRouter();
+
+  if (session.status === 'authenticated') {
+    router.push('/dashboard');
+    return null;
+  }
+    
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#F3F4F6] text-[#1F2937]">
       <div className="text-center space-y-6">

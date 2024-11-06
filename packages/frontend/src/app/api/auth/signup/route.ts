@@ -1,15 +1,17 @@
+import { signup } from '@/app/server/handlers/auth';
 import { NextResponse } from 'next/server'
-import { hash } from 'bcryptjs'
 
 export async function POST(req: Request) {
   try {
-    const { email, password } = await req.json()
-    const hashedPassword = await hash(password, 12)
-
-
-    console.log('Signup request received', email, password)
-
-    return NextResponse.json({ user: { email, hashedPassword } })
+    const { email, password, firstName, lastName } = await req.json()
+    if (!email || !password || !firstName || !lastName) {
+      return NextResponse.json(
+        { message: 'Email, password, first name, and last name are required' },
+        { status: 400 }
+      );
+    }
+    const result = await signup({email, password, firstName, lastName});
+    return NextResponse.json(result);
   } catch (error) {
     if (error instanceof Error) {
       return NextResponse.json(
