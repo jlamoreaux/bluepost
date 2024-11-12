@@ -1,0 +1,22 @@
+{
+  "client_id": "https://localhost:3000/client-metadata.json",
+  "client_name": "XPost",
+  "client_uri": "https://localhost:3000",
+  "logo_uri": "https://localhost:3000/logo.png",
+  "tos_uri": "https://localhost:3000/tos",
+  "policy_uri": "https://localhost:3000/policy",
+  "redirect_uris": [
+    "https://localhost:3000/callback"
+  ],
+  "scope": "atproto",
+  "grant_types": [
+    "authorization_code",
+    "refresh_token"
+  ],
+  "response_types": [
+    "code"
+  ],
+  "token_endpoint_auth_method": "none",
+  "application_type": "web",
+  "dpop_bound_access_tokens": true
+}

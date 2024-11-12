@@ -11,6 +11,8 @@ declare module "next-auth" {
   interface DefaultUser {
     firstName?: string
     lastName?: string
+    twitterStatus: "active" | "inactive" | "expired",
+    bskyStatus: "active" | "inactive" | "expired",
   }
   interface Session {
     user: DefaultUser & DefaultSession["user"]

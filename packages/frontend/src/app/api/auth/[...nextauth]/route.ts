@@ -15,6 +15,8 @@ const handler = NextAuth({
         token.lastName = user.lastName;
         token.id = user.id;
         token.email = user.email;
+        token.twitterStatus = user.twitterStatus;
+        token.bskyStatus = user.bskyStatus;
       }
       return token;
     },
@@ -28,6 +30,8 @@ const handler = NextAuth({
         email: token.email as string,
         firstName: token.firstName as string,
         lastName: token.lastName as string,
+        twitterStatus: token.twitterStatus as "active" | "inactive" | "expired",
+        bskyStatus: token.bskyStatus as "active" | "inactive" | "expired",
       }
 
       return session;

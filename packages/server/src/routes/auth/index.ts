@@ -54,7 +54,7 @@ auth.get('/me', async (c) => {
   }
 
   try {
-    const payload = await c.get('jwtPayload')
+    const payload = await c.get('jwtPayload');
     return c.json({ 
       authenticated: true,
       user: payload
@@ -67,15 +67,6 @@ auth.get('/me', async (c) => {
 // auth.get('/twitter', async (c) => {
 //   const url = await authService.getTwitterAuthUrl()
 //   return c.json({ url })
-// })
-
-// auth.get('/twitter/callback', async (c) => {
-//   const { oauth_token, oauth_verifier } = c.req.query()
-//   const result = await authService.handleTwitterCallback(oauth_token, oauth_verifier)
-//   if (result.success) {
-//     return c.json(result.user)
-//   }
-//   return c.json({ error: 'Twitter authentication failed' }, 400)
 // })
 
 // auth.get('/bluesky', async (c) => {

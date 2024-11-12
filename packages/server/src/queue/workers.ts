@@ -1,7 +1,4 @@
-// packages/backend/src/queue/workers.ts
-
 import { Worker } from 'bullmq';
-import { PrismaClient } from '@prisma/client';
 import { Redis } from 'ioredis';
 import { userService} from "../services/users/index.ts"
 import { createUserClient } from '../lib/x/client.ts';
@@ -9,7 +6,6 @@ import { Result } from '../utils/result.ts';
 import { postService } from '../services/posts/index.ts';
 import logger from '../utils/logger.ts';
 
-const prisma = new PrismaClient();
 const connection = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {maxRetriesPerRequest: null});
 const CROSSPOST_QUEUE = 'crosspost';
 

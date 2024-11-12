@@ -1,8 +1,7 @@
 import { Hono } from 'hono'
 import { serve } from '@hono/node-server'
 import { authRoutes } from './routes/auth/index.ts'
-import { postRoutes } from './routes/posts/index.ts'
-// import { userRoutes } from './routes/users'
+import { postRoutes } from './routes/api/posts/index.ts'
 import { errorHandler } from './utils/errorHandler.ts'
 import { startListeners } from './listeners/index.ts'
 import { env } from 'process';
@@ -12,6 +11,7 @@ import { contextStorage } from 'hono/context-storage';
 import logger from './utils/logger.ts';
 import type { User } from '@prisma/client';
 import { startWorkers } from './queue/workers.ts';
+import { callbackRoutes } from './routes/api/callback/index.ts';
 
 
 export type Variables = {
@@ -41,7 +41,6 @@ app.use('/api/*', async (c, next) => {
 
   try {
     const payload = await decode(token).payload as {user? : User};
-    logger.info('Payload', { payload });
     if (!payload.user) {
       logger.info('No user found in payload');
       return c.json({ error: 'Unauthorized' }, 401);
@@ -60,6 +59,7 @@ app.get('/api/protected', async (c) => {
 
 app.route('/auth', authRoutes);
 app.route('/api/posts', postRoutes)
+app.route('/api/callback', callbackRoutes);
 // app.route('/users', userRoutes)
 
 const port = env.PORT || 8080

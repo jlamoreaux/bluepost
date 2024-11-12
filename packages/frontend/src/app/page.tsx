@@ -1,15 +1,13 @@
 'use client';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 
 export default function Home() {
   const session = useSession();
-  const router = useRouter();
 
   if (session.status === 'authenticated') {
-    router.push('/dashboard');
+    if(window) window.location.href = '/dashboard';
     return null;
   }
     

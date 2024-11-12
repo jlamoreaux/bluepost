@@ -44,11 +44,14 @@ export const authService = {
       const passwordMatch = compareSync(password, account?.password);
       if (passwordMatch) {
         const { id, firstName, lastName } = user;
-        logger.info('User logged in', { id });
-        return Result.ok({ success: true, user: {id, firstName, lastName, email} });
+        const twitterStatus = user.accounts[0]?.xToken ? 'active' : 'inactive';
+        const bskyStatus = user.accounts[0]?.bskyTokenExpires ? (new Date(user.accounts[0].bskyTokenExpires) > new Date() ? 'active' : 'expired') : 'inactive';
+        const returnUser = { id, firstName, lastName, email, twitterStatus, bskyStatus };
+        logger.info('User logged in', { returnUser });
+        return Result.ok({ success: true, user: returnUser });
       }
     }
     logger.info('Invalid password', { email });
     return Result.ok({ success: false });
-  }
+  },
 };

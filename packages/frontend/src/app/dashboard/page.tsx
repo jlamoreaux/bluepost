@@ -4,24 +4,37 @@ import { useEffect, useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { getBskyAuthUrl, getTwitterAuthUrl } from '@/utils';
+import { useSession } from 'next-auth/react';
+
+type ConnectionStatus = "active" | "inactive" | "expired" | "loading"
 
 export default function Dashboard() {
-  const [twitterConnected, setTwitterConnected] = useState(false)
-  const [blueskyConnected, setBlueskyConnected] = useState(false)
-  const [posts, setPosts] = useState<{ id: string | number; content: string; source: 'twitter' | 'bluesky'; crossPostedTo: 'twitter' | 'bluesky'; timestamp: string  }[]>([
-    // { id: 1, content: 'Hello, world!', source: 'Twitter', destination: 'Bluesky', timestamp: new Date().toISOString() },
-    // { id: 2, content: 'Cross-posting is awesome!', source: 'Bluesky', destination: 'Twitter', timestamp: new Date().toISOString() },
-  ])
+  const [twitterConnected, setTwitterConnected] = useState<ConnectionStatus>("inactive");
+  const [blueskyConnected, setBlueskyConnected] = useState<ConnectionStatus>("inactive");
+  const [posts, setPosts] = useState<{ id: string | number; content: string; source: 'twitter' | 'bluesky'; crossPostedTo: 'twitter' | 'bluesky'; timestamp: string; }[]>([])
+  const session = useSession()
 
   const connectTwitter = () => {
     console.log('Connecting Twitter...')
-    setTwitterConnected(true)
+    if(window) window.location.href = getTwitterAuthUrl("/auth/callback/twitter")
+    setTwitterConnected("active")
   }
 
-  const connectBluesky = () => {
-    console.log('Connecting Bluesky...')
-    setBlueskyConnected(true)
+  const connectBluesky = async () => {
+    const prevStatus = blueskyConnected;
+    setBlueskyConnected("loading")
+    const url = await getBskyAuthUrl("jlmx.dev");
+    if (url) {
+      if(window) window.location.href = url.href;
+      setBlueskyConnected(prevStatus);
+    }
   }
+
+  useEffect(() => {
+    setTwitterConnected(session.data?.user.twitterStatus || "inactive");
+    setBlueskyConnected(session.data?.user.bskyStatus || "inactive");
+  }, [session, twitterConnected, blueskyConnected])
 
   useEffect(() => {
     fetch('/api/posts', {
@@ -49,9 +62,9 @@ export default function Dashboard() {
             <CardDescription className="font-roboto">Connect your Twitter account</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={connectTwitter} disabled={twitterConnected} 
-                    className={`bg-[#38BDF8] hover:bg-[#0EA5E9] text-white font-roboto ${twitterConnected ? 'opacity-50 cursor-not-allowed' : ''}`}>
-              {twitterConnected ? 'Connected' : 'Connect Twitter'}
+            <Button onClick={connectTwitter} disabled={twitterConnected === 'active'} 
+                    className={`bg-[#38BDF8] hover:bg-[#0EA5E9] text-white font-roboto ${twitterConnected === 'active' ? 'opacity-50 cursor-not-allowed' : ''}`}>
+              {twitterConnected === 'active' ? 'Connected' : (twitterConnected === 'expired' ? 'Reconnect Twitter' : 'Connect Twitter')}
             </Button>
           </CardContent>
         </Card>
@@ -62,9 +75,9 @@ export default function Dashboard() {
             <CardDescription className="font-roboto">Connect your Bluesky account</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={connectBluesky} disabled={blueskyConnected}
-                    className={`bg-[#FF6B6B] hover:bg-[#E03131] text-white font-roboto ${blueskyConnected ? 'opacity-50 cursor-not-allowed' : ''}`}>
-              {blueskyConnected ? 'Connected' : 'Connect Bluesky'}
+            <Button onClick={connectBluesky} disabled={blueskyConnected === 'active'}
+                    className={`bg-[#FF6B6B] hover:bg-[#E03131] text-white font-roboto ${blueskyConnected === 'active' ? 'opacity-50 cursor-not-allowed' : ''}`}>
+              {blueskyConnected === 'active' ? 'Connected' : (blueskyConnected === 'expired' ? 'Reconnect Bluesky' : 'Connect Bluesky')}
             </Button>
           </CardContent>
         </Card>

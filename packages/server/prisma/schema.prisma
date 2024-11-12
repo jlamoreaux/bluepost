@@ -18,6 +18,10 @@ model User {
   bskyDid   String?   @unique
   accounts  Account[]
   posts     Post[]
+
+  Session Session[]
+
+  BlueskySession BlueskySession[]
 }
 
 model Account {
@@ -47,4 +51,28 @@ model Post {
   xPostId       String?
   timestamp     DateTime @default(now())
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  expires      DateTime
+  sessionToken String
+  accessToken  String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model BlueskySession {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  expires      DateTime
+  refreshToken String
+  accessToken  String
+  iss          String
+  sub          String
+  aud          String
+  scope        String
+  token_type   String
+  dpop_key     String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
